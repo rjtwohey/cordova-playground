@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DataStorageService } from '../data-storage.service';
+import { VaultService, VaultServiceState } from '../vault.service';
 
 @Component({
   selector: 'app-home',
@@ -7,13 +7,25 @@ import { DataStorageService } from '../data-storage.service';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  public state: VaultServiceState;
 
-  constructor(private dataStorage: DataStorageService) {
-
+  constructor(private vaultService: VaultService) {
+    this.state = vaultService.state;
   }
 
-  buttonClicked() {
-    //we're going to do some stuff here later...
+  async setSession(data: string) {
+    await this.vaultService.setSession(data);
   }
 
+  async restoreSession() {
+    await this.vaultService.restoreSession();
+  }
+
+  lockVault() {
+    this.vaultService.lockVault();
+  }
+  
+  unlockVault() {
+    this.vaultService.unlockVault();
+  }
 }

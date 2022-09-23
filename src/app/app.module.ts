@@ -1,28 +1,29 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
-import { IonicModule, IonicRouteStrategy, Platform } from '@ionic/angular';
-import { KeyValueStorage } from '@ionic-enterprise/secure-storage/ngx';
-
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { VaultService } from './vault.service';
 
-const appInit = (plt: Platform): (() => Promise<void>) => async () => {
-  await plt.ready();
-}
+const appInitFactory =
+  (vaultService: VaultService): (() => Promise<void>) =>
+  () =>
+    vaultService.init();
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, KeyValueStorage,
-     {
+  entryComponents: [],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    {
       provide: APP_INITIALIZER,
-      useFactory: appInit,
-      deps: [Platform],
-      multi: true
-    } 
+      useFactory: appInitFactory,
+      deps: [VaultService],
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
